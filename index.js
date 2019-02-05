@@ -12,9 +12,7 @@ function app () {
 async function show () {
     const files = getFiles();
     const todos = await parseTodo(files);
-    console.log(todos);
     printTodo(todos);
-    // console.log(todos);
 }
 
 function getFiles () {
