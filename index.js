@@ -1,6 +1,6 @@
 const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
-const { parseTodo } = require('./parseTodo');
+const { parseTodo, printTodo } = require('./parseTodo');
 
 app();
 
@@ -9,15 +9,20 @@ function app () {
     readLine(processCommand);
 }
 
-function show () {
+async function show () {
     const files = getFiles();
-    const todos = parseTodo(files);
+    const todos = await parseTodo(files);
     console.log(todos);
+    printTodo(todos);
+    // console.log(todos);
 }
 
 function getFiles () {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
-    return filePaths.map(path => readFile(path));
+    return filePaths.map(function (path) {
+        let name = path.split(/\\?\//);
+        return { name: name[name.length - 1], content: readFile(path) }
+    });
 }
 
 function processCommand (command) {
