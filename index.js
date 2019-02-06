@@ -1,6 +1,6 @@
 const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
-const { parseTodos, parseTodo, printTodo } = require('./parseTodo');
+const { parseTodos, printTodo } = require('./parseTodo');
 
 app();
 
@@ -9,24 +9,48 @@ function app () {
     readLine(processCommand);
 }
 
-function show () {
+show = () => {
     const files = getFiles();
     const todos = parseTodos(files);
     console.log(printTodo(todos));
-}
-function important () {
+};
+important = () => {
     const files = getFiles();
     const todos = parseTodos(files);
+    let important = todos.filter( (todo) => {
+        return todo.important;
+    });
+    console.log(printTodo(important));
+};
+sortImportance = () => {
+    const files = getFiles();
+    let todos = parseTodos(files);
+    todos.sort( (a, b) => {
+        if (a.important < b.important)
+            return 1;
+        if (a.important > b.important)
+            return -1;
+        return 0;
+    });
     console.log(printTodo(todos));
-}
+};
 
-function getFiles () {
+findUser = (command) => {
+    let user = command.match(/ (.*)/)[1];
+
+    const files = getFiles();
+    let todos = parseTodos(files, user);
+
+    console.log(printTodo(todos));
+};
+
+getFiles = () => {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(function (path) {
         let name = path.split(/\\?\//);
         return { name: name[name.length - 1], content: readFile(path) }
     });
-}
+};
 
 function processCommand (command) {
     switch (command) {
@@ -38,6 +62,18 @@ function processCommand (command) {
             break;
         case 'important':
             important();
+            break;
+        case (command.match(/user .*/i) || {}).input:
+            findUser(command);
+            break;
+        case 'sort importance':
+            sortImportance();
+            break;
+        case 'sort user':
+            sortImportance();
+            break;
+        case 'sort date':
+            sortImportance();
             break;
         default:
             console.log('wrong command');
