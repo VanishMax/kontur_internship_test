@@ -1,6 +1,6 @@
 const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
 const { readLine } = require('./console');
-const { parseTodo, printTodo } = require('./parseTodo');
+const { parseTodos, parseTodo, printTodo } = require('./parseTodo');
 
 app();
 
@@ -11,9 +11,13 @@ function app () {
 
 function show () {
     const files = getFiles();
-    const todos = parseTodo(files);
-    const todosStr = printTodo(todos);
-    console.log(todosStr);
+    const todos = parseTodos(files);
+    console.log(printTodo(todos));
+}
+function important () {
+    const files = getFiles();
+    const todos = parseTodos(files);
+    console.log(printTodo(todos));
 }
 
 function getFiles () {
@@ -31,6 +35,9 @@ function processCommand (command) {
             break;
         case 'show':
             show();
+            break;
+        case 'important':
+            important();
             break;
         default:
             console.log('wrong command');
