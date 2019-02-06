@@ -6,7 +6,7 @@ const fs = require('fs');
 // TODO Digi; 2018-09-21; Добавить функцию getFileName, которая по пути файла будет возвращать его имя. Воспользоваться модулем path из Node.js
 // TODO Veronika; 2018-08-16; сделать кодировку настраиваемой
 
-function getAllFilePathsWithExtension(directoryPath, extension, filePaths) {
+getAllFilePathsWithExtension = (directoryPath, extension, filePaths) => {
     filePaths = filePaths || [];
     const fileNames = fs.readdirSync(directoryPath);
     for (const fileName of fileNames) {
@@ -16,13 +16,20 @@ function getAllFilePathsWithExtension(directoryPath, extension, filePaths) {
         }
     }
     return filePaths;
-}
+};
 
-function readFile(filePath) {
+readFile = (filePath) => {
     return fs.readFileSync(filePath, 'utf8');
-}
+};
+
+getFiles = () => {
+    const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
+    return filePaths.map(function (path) {
+        let name = path.split(/\\?\//);
+        return { name: name[name.length - 1], content: readFile(path) }
+    });
+};
 
 module.exports = {
-    getAllFilePathsWithExtension,
-    readFile,
+    getFiles
 };

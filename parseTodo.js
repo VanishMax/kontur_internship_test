@@ -1,3 +1,4 @@
+// Parses all the files to get the good format
 parseTodos = (files, username) => {
   var regexp = /\/\/ ?todo ?.*?\n/gi;
 
@@ -37,6 +38,7 @@ parseTodo = (todoSplitted, user, file) => {
   };
 };
 
+// Returns the string - table of all satisfying todos
 printTodo = (todos) => {
 
   // What is the length of the cells of the printed table
@@ -46,6 +48,8 @@ printTodo = (todos) => {
   todos.forEach( (todo) => {
     counts.todos++;
 
+    // Reduce the size of the long string and
+    // Set the maximum length of the table cell
     if(todo.user.length > 10){
       todo.user = todo.user.substr(0, 7) + '...';
       counts.user = 10;
@@ -67,13 +71,14 @@ printTodo = (todos) => {
     } else if(todo.file.length > counts.file) counts.file = todo.file.length;
   });
 
+  // The header of the table with calculated width
   let printTodos = ['  !  |  user', ' '.repeat(counts.user - 4),
     '  |  date', ' '.repeat(counts.date - 4),
     '  |  comment', ' '.repeat(counts.comment - 7),
     '  |  fileName', ' '.repeat(counts.file - 8), '  \n',
     '-'.repeat(counts.user + counts.file + counts.date + counts.comment + 25), '\n'];
 
-  // Print everything
+  // All others rows of the table
   todos.forEach( (todo) => {
     if(todo.important) {
       printTodos.push('  !  |');
@@ -85,8 +90,10 @@ printTodo = (todos) => {
     printTodos.push(' '.repeat(2) + todo.comment + ' '.repeat(counts.comment - todo.comment.length + 2) + '|');
     printTodos.push(' '.repeat(2) + todo.file + ' '.repeat(counts.file - todo.file.length + 2) + '\n');
   });
+  // The bottom border
   if(counts.todos !== 0) printTodos.push('-'.repeat(counts.user + counts.file + counts.date + counts.comment + 25));
 
+  // Return the string, not an array, by joining
   return printTodos.join('');
 };
 

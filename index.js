@@ -1,22 +1,30 @@
-const { getAllFilePathsWithExtension, readFile } = require('./fileSystem');
+const { getFiles } = require('./fileSystem');
 const { readLine } = require('./console');
 const { parseTodos, printTodo } = require('./parseTodo');
 
+// Start the app
 app();
-
 function app () {
     console.log('Please, write your command!');
     readLine(processCommand);
 }
 
+// Main functions
+
 show = () => {
+    // Get files by extension in format { name: 'FileName.js', content: '...' }
     const files = getFiles();
+    // Parses Todos to format
+    // { important: 0, user: 'userName', date: '2018-10-03', content: '...', file: 'fileName.js' }
     const todos = parseTodos(files);
+    // At all - printTodo returns the string of the table of todos to print
     console.log(printTodo(todos));
 };
 important = () => {
     const files = getFiles();
     const todos = parseTodos(files);
+
+    // Deletes useless objects leaving only where important == true
     let important = todos.filter( (todo) => {
         return todo.important;
     });
@@ -25,6 +33,8 @@ important = () => {
 sortImportance = () => {
     const files = getFiles();
     let todos = parseTodos(files);
+
+    // Sorts by importance, because it is a number
     todos.sort( (a, b) => {
         if (a.important < b.important)
             return 1;
@@ -37,21 +47,15 @@ sortImportance = () => {
 
 findUser = (command) => {
     let user = command.match(/ (.*)/)[1];
-
     const files = getFiles();
-    let todos = parseTodos(files, user);
 
+    // Gives the second argument to parseTodos.
+    // It does not include todos where is the wrong username
+    let todos = parseTodos(files, user);
     console.log(printTodo(todos));
 };
 
-getFiles = () => {
-    const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
-    return filePaths.map(function (path) {
-        let name = path.split(/\\?\//);
-        return { name: name[name.length - 1], content: readFile(path) }
-    });
-};
-
+// Process commands from console
 function processCommand (command) {
     switch (command) {
         case 'exit':
@@ -63,6 +67,7 @@ function processCommand (command) {
         case 'important':
             important();
             break;
+        // user <username>
         case (command.match(/user .*/i) || {}).input:
             findUser(command);
             break;
