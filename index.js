@@ -9,10 +9,11 @@ function app () {
     readLine(processCommand);
 }
 
-async function show () {
+function show () {
     const files = getFiles();
-    const todos = await parseTodo(files);
-    printTodo(todos);
+    const todos = parseTodo(files);
+    const todosStr = printTodo(todos);
+    console.log(todosStr);
 }
 
 function getFiles () {
