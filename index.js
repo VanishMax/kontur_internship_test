@@ -33,13 +33,16 @@ important = () => {
 };
 
 findUser = (command) => {
-    let user = command.match(/ *user (.*)/)[1];
+    let username = command.match(/^ *user ?(.*)/)[1];
     const files = getFiles();
 
     // Gives the second argument to parseTodos.
     // It does not include todos where is the wrong username
-    let todos = parseTodos(files, user);
-    console.log(printTodo(todos));
+    let todos = parseTodos(files);
+    let todosReady = todos.filter( (todo) => {
+        return todo.user.toLowerCase().startsWith(username.toLowerCase())
+    });
+    console.log(printTodo(todosReady));
 };
 
 sortByImportance = () => {
@@ -89,6 +92,25 @@ sortByDate = () => {
     console.log(printTodo(todos));
 };
 
+dates = (command) => {
+    const files = getFiles();
+    let todos = parseTodos(files);
+
+    let todosReady = [];
+    let date = command.match(/^ *date ?(.*)/)[1];
+
+    // If the command matches regExp {yyyy[-mm-dd]} - leave only todos newer than that date
+    if(/^\d\d\d\d-\d\d-\d\d$|^\d\d\d\d-\d\d$|^\d\d\d\d$/.test(date)){
+      todosReady = todos.filter( (todo) => {
+          // String comparison because date has a very easy format for it
+          return todo.date >= date;
+      });
+    }
+
+    console.log(printTodo(todosReady));
+};
+
+
 // Process commands from console
 function processCommand (command) {
     switch (command) {
@@ -102,7 +124,7 @@ function processCommand (command) {
             important();
             break;
         // user <username>
-        case (command.match(/ *user .*/i) || {}).input:
+        case (command.match(/^ *user ?.*/i) || {}).input:
             findUser(command);
             break;
         case 'sort importance':
@@ -114,9 +136,9 @@ function processCommand (command) {
         case 'sort date':
             sortByDate();
             break;
-        // date <date>
-        case (command.match(/ *date .*/i) || {}).input:
-            findUser(command);
+        // date {yyyy[-mm-dd]}
+        case (command.match(/^ *date .*/i) || {}).input:
+            dates(command);
             break;
         default:
             console.log('wrong command');
