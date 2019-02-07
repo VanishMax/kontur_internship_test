@@ -97,7 +97,7 @@ printTodo = (todos) => {
   return printTodos.join('');
 };
 
-// TODO max; 04-02-2019; it is not a difficult task at all
+// TODO max; 2019-02-04; it is not a difficult task at all
 
 module.exports = {
   parseTodos,

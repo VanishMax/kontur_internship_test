@@ -20,6 +20,7 @@ show = () => {
     // At all - printTodo returns the string of the table of todos to print
     console.log(printTodo(todos));
 };
+
 important = () => {
     const files = getFiles();
     const todos = parseTodos(files);
@@ -30,11 +31,22 @@ important = () => {
     });
     console.log(printTodo(important));
 };
-sortImportance = () => {
+
+findUser = (command) => {
+    let user = command.match(/ *user (.*)/)[1];
+    const files = getFiles();
+
+    // Gives the second argument to parseTodos.
+    // It does not include todos where is the wrong username
+    let todos = parseTodos(files, user);
+    console.log(printTodo(todos));
+};
+
+sortByImportance = () => {
     const files = getFiles();
     let todos = parseTodos(files);
 
-    // Sorts by importance, because it is a number
+    // Sorts by Importance(!). It is a number, the biggest at the top
     todos.sort( (a, b) => {
         if (a.important < b.important)
             return 1;
@@ -45,13 +57,35 @@ sortImportance = () => {
     console.log(printTodo(todos));
 };
 
-findUser = (command) => {
-    let user = command.match(/ (.*)/)[1];
+sortByUser = () => {
     const files = getFiles();
+    let todos = parseTodos(files);
 
-    // Gives the second argument to parseTodos.
-    // It does not include todos where is the wrong username
-    let todos = parseTodos(files, user);
+    // Sorts by User. It is a string - simple alphabetical sort
+    todos.sort( (a, b) => {
+        if(a.user === '')
+            return 1;
+        if (a.user.toLowerCase() > b.user.toLowerCase())
+            return 1;
+        if (a.user.toLowerCase() < b.user.toLowerCase())
+            return -1;
+        return 0;
+    });
+    console.log(printTodo(todos));
+};
+
+sortByDate = () => {
+    const files = getFiles();
+    let todos = parseTodos(files);
+
+    // Sorts by User. It is a string - simple alphabetical sort
+    todos.sort( (a, b) => {
+        if (a.date < b.date)
+            return 1;
+        if (a.date > b.date)
+            return -1;
+        return 0;
+    });
     console.log(printTodo(todos));
 };
 
@@ -68,17 +102,21 @@ function processCommand (command) {
             important();
             break;
         // user <username>
-        case (command.match(/user .*/i) || {}).input:
+        case (command.match(/ *user .*/i) || {}).input:
             findUser(command);
             break;
         case 'sort importance':
-            sortImportance();
+            sortByImportance();
             break;
         case 'sort user':
-            sortImportance();
+            sortByUser();
             break;
         case 'sort date':
-            sortImportance();
+            sortByDate();
+            break;
+        // date <date>
+        case (command.match(/ *date .*/i) || {}).input:
+            findUser(command);
             break;
         default:
             console.log('wrong command');
@@ -86,4 +124,4 @@ function processCommand (command) {
     }
 }
 
-// TODO dev; 04-02-2019; you can do it!
+// TODO dev; 2019-03-02; you can do it!
