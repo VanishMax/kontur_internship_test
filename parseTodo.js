@@ -1,7 +1,8 @@
 // Parses all the files to get the good format
 parseTodos = (files) => {
   // RegExp for the todo string
-  var regexp = /\/\/ ?todo ?.*?\n/gi;
+
+  var regexp = /\/\/ ?todo ?.*?(\n|$)/gi;
 
   let todos = [];
   files.forEach( (file) => {
@@ -12,24 +13,60 @@ parseTodos = (files) => {
       // Split the todo with ';'. It is an array now
       let todoSplitted = todo.split(/;/);
 
-      // Catch the username from the array and delete all spaces
-      // The same for the date and comment
-      let user = todoSplitted[0].match(/todo ?(.*)/i)[1].trim();
-      let date = todoSplitted[1].trim();
-      let comment = todoSplitted[todoSplitted.length - 1].match(/ ?(.*)\n/i)[1].trim();
+      // If TODO does not have ';' - it should have only a comment
+      // Explanation in the else {} section
+      if(todoSplitted.length === 1) {
 
-      // Find all the exclamation marks, count them and pass to object as number
-      let importantArr = todoSplitted[todoSplitted.length - 1].match(/!/g);
-      let important = importantArr ? importantArr.length : 0;
+        let comment = todoSplitted[0].match(/todo ?(.*)\n?/i)[1].trim();
 
-      // Finally, add the todo object to todos array and return it back
-      todos.push({
-        important: important,
-        user: user,
-        date: date,
-        comment: comment,
-        file: file.name
-      });
+        let importantArr = comment.match(/!/g);
+        let important = importantArr ? importantArr.length : 0;
+
+        todos.push({
+          important: important,
+          user: '',
+          date: '',
+          comment: comment,
+          file: file.name
+        });
+
+      // Assume that if todo contain only 1 ';' - there is no date
+      } else if(todoSplitted.length === 2) {
+        let comment = todoSplitted[1].match(/ ?(.*)\n?/i)[1].trim();
+        let user = todoSplitted[0].match(/todo ?(.*)/i)[1].trim();
+
+        let importantArr = comment.match(/!/g);
+        let important = importantArr ? importantArr.length : 0;
+
+        todos.push({
+          important: important,
+          user: user,
+          date: '',
+          comment: comment,
+          file: file.name
+        });
+
+      // Else todo contain 2 ';' and all the necessary fields
+      } else {
+        // Catch the username from the array and delete all spaces
+        // The same for the date and comment
+        let user = todoSplitted[0].match(/todo ?(.*)/i)[1].trim();
+        let date = todoSplitted[1].trim();
+        let comment = todoSplitted[todoSplitted.length - 1].match(/ ?(.*)\n?/i)[1].trim();
+
+        // Find all the exclamation marks, count them and pass to object as number
+        let importantArr = todoSplitted[todoSplitted.length - 1].match(/!/g);
+        let important = importantArr ? importantArr.length : 0;
+
+        // Finally, add the todo object to todos array and return it back
+        todos.push({
+          important: important,
+          user: user,
+          date: date,
+          comment: comment,
+          file: file.name
+        });
+      }
     });
   });
 

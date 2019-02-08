@@ -66,13 +66,10 @@ sortByUser = () => {
 
     // Sorts by User. It is a string - simple alphabetical sort
     todos.sort( (a, b) => {
-        if(a.user === '')
-            return 1;
-        if (a.user.toLowerCase() > b.user.toLowerCase())
-            return 1;
-        if (a.user.toLowerCase() < b.user.toLowerCase())
-            return -1;
-        return 0;
+        if(a.user.toLowerCase() === "" || a.user.toLowerCase() === null) return 1;
+        if(b.user.toLowerCase() === "" || b.user.toLowerCase() === null) return -1;
+        if(a.user.toLowerCase() === b.user.toLowerCase()) return 0;
+        return a.user.toLowerCase() < b.user.toLowerCase() ? -1 : 1;
     });
     console.log(printTodo(todos));
 };
@@ -83,11 +80,10 @@ sortByDate = () => {
 
     // Sorts by User. It is a string - simple alphabetical sort
     todos.sort( (a, b) => {
-        if (a.date < b.date)
-            return 1;
-        if (a.date > b.date)
-            return -1;
-        return 0;
+        if(a.date === "" || a.date === null) return 1;
+        if(b.date === "" || b.date === null) return -1;
+        if(a.date === b.date) return 0;
+        return a.date < b.date ? 1 : -1;
     });
     console.log(printTodo(todos));
 };
